@@ -37,9 +37,17 @@ public class BoardController {
     }
 
     @GetMapping("/board/list")
-    public String boardList(Model model, @PageableDefault(page=0, size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public String boardList(Model model,
+                            @PageableDefault(page=0, size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
+                            String searchKeyword) {
 
-        Page<Board> list = boardService.boardList(pageable);
+        Page<Board> list = null;
+
+        if (searchKeyword == null) {
+            list = boardService.boardList(pageable);
+        } else {
+            list = boardService.boardSearchList(searchKeyword, pageable);
+        }
 
         int nowPage = list.getPageable().getPageNumber() + 1;  // pageable.getPageNumber();로도 현재페이지를 가져올 수 있음, pageable이 갖고있는 페이지는 0에서 부터 시작하기 때문에 +1
         int startPage = Math.max(nowPage - 4, 1); // Math클래스의 max메소드는 둘 중 큰 값을 반환한다.
